@@ -1,0 +1,32 @@
+name: Run Python App
+
+on:
+  push:
+    branches:
+      - main  # Déclenche le workflow lors d'un push sur la branche main
+  workflow_dispatch:  # Permet de déclencher manuellement le workflow
+
+jobs:
+  run-app:
+    runs-on: ubuntu-latest  # Utilise un environnement Ubuntu
+
+    steps:
+      # Étape 1 : Télécharge le code du dépôt
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Étape 2 : Configure Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'  # Version de Python à utiliser
+
+      # Étape 3 : Installe les dépendances
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Étape 4 : Exécute l'application
+      - name: Run Python app
+        run: python app.py
