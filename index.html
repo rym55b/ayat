@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء فيديو بالآيات القرآنية</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            width: 100%;
+            max-width: 500px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        textarea, input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #28a745;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #output {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>إنشاء فيديو بالآيات القرآنية</h1>
+    <form id="videoForm">
+        <label for="verse">أدخل الآية:</label>
+        <textarea id="verse" rows="4" placeholder="أدخل الآية هنا..."></textarea>
+
+        <label for="audio">اختر ملف الصوت:</label>
+        <input type="file" id="audio" accept="audio/*">
+
+        <button type="submit">إنشاء الفيديو</button>
+    </form>
+
+    <div id="output"></div>
+
+    <script>
+        document.getElementById('videoForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const verse = document.getElementById('verse').value;
+            const audioFile = document.getElementById('audio').files[0];
+
+            if (!verse || !audioFile) {
+                alert('الرجاء إدخال الآية واختيار ملف الصوت.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('verse', verse);
+            formData.append('audio', audioFile);
+
+            const output = document.getElementById('output');
+            output.textContent = 'جاري إنشاء الفيديو...';
+
+            try {
+                const response = await fetch('/generate-video', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = URL.createObjectURL(blob);
+                    output.innerHTML = `<a href="${url}" download="output.mp4">انقر هنا لتحميل الفيديو</a>`;
+                } else {
+                    output.textContent = 'حدث خطأ أثناء إنشاء الفيديو.';
+                }
+            } catch (error) {
+                output.textContent = 'حدث خطأ في الاتصال بالخادم.';
+            }
+        });
+    </script>
+</body>
+</html>
